@@ -1,0 +1,5 @@
+name = Video Embed Panopto
+description = Provides Panopto Handler for Video Embed Fields.
+core = 7.x
+package = Media
+dependencies[] = video_embed_field

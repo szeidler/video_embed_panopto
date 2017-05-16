@@ -1,0 +1,165 @@
+<?php
+
+define('VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH', '640px');
+define('VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT', '480px');
+
+/**
+ * Implements hook_theme().
+ */
+function video_embed_panopto_theme($existing, $type, $theme, $path) {
+  return array(
+    'video_embed_panopto' => array(
+      'template' => 'video_embed_panopto',
+      'path' => drupal_get_path('module', 'video_embed_panopto') . '/templates',
+      'arguments' => array(
+        'url' => NULL,
+        'width' => NULL,
+        'height' => NULL,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_video_embed_handler_info().
+ */
+function video_embed_panopto_video_embed_handler_info() {
+  $handlers = array();
+  $handlers['panopto'] = array(
+    'title' => 'Panopto Video',
+    'function' => 'video_embed_panopto_handle_video',
+    'thumbnail_function' => 'video_embed_panopto_handle_thumbnail',
+    'form' => 'video_embed_panopto_form',
+    // As panopto uses client-based subdomains you will need to implement
+    // hook_video_embed_handler_info_alter() with your own white-listed domain.
+    'domains' => array(
+      'panopto.eu',
+      'panopto.com',
+    ),
+    'defaults' => array(
+      'width' => VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH,
+      'height' => VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT,
+    ),
+  );
+  return $handlers;
+}
+
+/**
+ * Builds the configuration form for the video player.
+ *
+ * @param $defaults
+ *
+ * @return array
+ */
+function video_embed_panopto_form($defaults) {
+  $form = array();
+  $form['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Player Width'),
+    '#description' => t('The width of the player.'),
+    '#default_value' => $defaults['width'],
+  );
+  $form['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Player Height'),
+    '#description' => t('The height of the player.'),
+    '#default_value' => $defaults['height'],
+  );
+  $form['autoplay'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable autoplay'),
+    '#description' => t('Should the video start automatically?'),
+    '#default_value' => $defaults['autoplay'],
+  );
+  return $form;
+}
+
+/**
+ * Video handler create the embedded video output.
+ *
+ * @param $url
+ *   Panopto video or embed url.
+ * @param array $settings
+ *   An associative array of this handlers settings, from the settings form.
+ *
+ * @return array|string
+ *   The embed code for the video.
+ */
+function video_embed_panopto_handle_video($url, array $settings) {
+  $output = '';
+  $video_details = _video_embed_panopto_get_video_details($url);
+
+  if ($video_details) {
+    // The module currently supports version 1 only.
+    $video_details['version'] = 1;
+    $video_details['autoplay'] = $settings['autoplay'] ? 'true' : 'false';
+
+    // Theme the embedding element.
+    $embed = theme('video_embed_panopto', array(
+        'url' => '\\\\' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/Pages/Viewer.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
+        'width' => $settings['width'],
+        'height' => $settings['height'],
+      )
+    );
+
+    // Return a render array.
+    $video = array(
+      '#markup' => $embed,
+    );
+    $output = $video;
+  }
+  else {
+    drupal_set_message(t('Error with getting id of the video.'), 'error');
+  }
+
+  // Return an empty string if there is no id, so we don't have broken embeds.
+  return $output;
+}
+
+/**
+ * Retrieves the thumbnail for the Panopto video.
+ *
+ * @param $url
+ *   Panopto video or embed url.
+ *
+ * @return array
+ *   an array with the keys:
+ *     'id' => an id for the video which is unique to your provider
+ *     'url' => the url to retrieve the thumbnail from
+ */
+function video_embed_panopto_handle_thumbnail($url) {
+  $video_details = _video_embed_panopto_get_video_details($url);
+  $thumbnail = 'https://' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/PublicAPI/SessionPreviewImage?id=' . $video_details['video_id'];
+  return array(
+    'id' => $video_details['video_id'],
+    'url' => $thumbnail,
+  );
+}
+
+/**
+ * Helper function to extract video information from panopto URLs.
+ *
+ * @param string $url
+ *   Panopto video or embed url.
+ *
+ * @return array|bool
+ *   Video details of the video or FALSE if there is no match.
+ */
+function _video_embed_panopto_get_video_details($url) {
+  $matches = array();
+  $patterns = array(
+    '@.*//(.*).(hosted.panopto.com|cloud.panopto.eu)/Panopto/Pages/Viewer\.aspx\?id\=([^"\&]+)@i',
+    '@.*//(.*).(hosted.panopto.com|cloud.panopto.eu)/Panopto/Pages/Embed\.aspx\?id\=([^"\&]+)@i',
+  );
+  foreach ($patterns as $pattern) {
+    preg_match($pattern, $url, $matches);
+    if (!empty($matches[1]) && !empty($matches[2]) && !empty($matches[3])) {
+      return array(
+        'client_id' => $matches[1],
+        'server' => $matches[2],
+        'video_id' => $matches[3],
+      );
+    }
+  }
+  return FALSE;
+}
