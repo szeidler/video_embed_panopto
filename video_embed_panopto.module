@@ -1,7 +1,7 @@
 <?php
 
-define('VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH', '640px');
-define('VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT', '480px');
+define('VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH', '640');
+define('VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT', '480');
 
 /**
  * Implements hook_theme().
@@ -67,8 +67,8 @@ function video_embed_panopto_form($defaults) {
   );
   $form['autoplay'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Enable autoplay'),
-    '#description' => t('Should the video start automatically?'),
+    '#title' => t('Autoplay'),
+    '#description' => t('Play the video immediately.'),
     '#default_value' => $defaults['autoplay'],
   );
   return $form;
