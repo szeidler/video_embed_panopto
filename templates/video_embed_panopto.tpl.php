@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Theme implementation for video_embed_panopto.
