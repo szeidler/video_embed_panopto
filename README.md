@@ -11,12 +11,16 @@ INSTALLATION
  * Install as you would normally install a contributed Drupal module. See:
    https://drupal.org/documentation/install/modules-themes/modules-7
    for further information.
- * Implement `hook_video_embed_handler_info_alter()` to whitelist your
-   panopto client subdomain.
-     * That is required, because panopto does not use an unique host, but
-     client-specific subdomains. Otherwise the module will return a
-     `This video provider is not currently supported.` validation error.
+   
+CONFIGURATION
+------------
 
+ * Open the Video Embed Field configuration page at
+   `admin/config/media/vef/settings` and specify your client domains.
+
+
+Alternatively you can programatically specify your client domains
+implementing `hook_video_embed_handler_info_alter()`.
 
 ```php
 <?php

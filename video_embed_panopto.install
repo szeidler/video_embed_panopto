@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function video_embed_panopto_install() {
+  $t = get_t();
+  drupal_set_message($t('Thank you for installing the Video Embed Panopto module. It is required to set your Panopto client domains in the <a href="@url">VEF configuration</a>.', array('@url' => url('admin/config/media/vef/settings'))));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function video_embed_panopto_uninstall() {
+  variable_del('video_embed_field_panopto_client_domains');
+}
