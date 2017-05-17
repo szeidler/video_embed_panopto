@@ -103,11 +103,11 @@ function video_embed_panopto_form_validate(array $element, array &$form_state, a
  * Implements hook_form_FORM_ID_alter().
  */
 function video_embed_panopto_form_video_embed_field_settings_form_alter(&$form, &$form_state, $form_id) {
-  $form['video_embed_field_panopto_client_domains'] = array(
+  $form['video_embed_panopto_client_domains'] = array(
     '#type' => 'textarea',
     '#title' => t('Panopto client domains'),
     '#description' => t('Panopto does not use an unique host, but client-specific subdomains. For that reason we need to whitelist client domains. Add one domain per line, e.g.:<br> <em>myclientname.cloud.panopto.eu</em><br><em>mysecondclient.cloud.panopto.eu</em>'),
-    '#default_value' => variable_get('video_embed_field_panopto_client_domains', ''),
+    '#default_value' => variable_get('video_embed_panopto_client_domains', ''),
   );
   $form['#submit'][] = '_video_embed_panopto_form_video_embed_field_settings_clear_cache';
 }
@@ -136,7 +136,7 @@ function _video_embed_panopto_form_video_embed_field_settings_clear_cache(array 
  * Implements hook_video_embed_handler_info_alter().
  */
 function video_embed_panopto_video_embed_handler_info_alter(array &$info) {
-  if ($client_domains_value = variable_get('video_embed_field_panopto_client_domains', '')) {
+  if ($client_domains_value = variable_get('video_embed_panopto_client_domains', '')) {
     $client_domains = preg_split('/(\r\n?|\n)/', $client_domains_value);
     if (!empty($client_domains)) {
       $info['panopto']['domains'] = array_merge($info['panopto']['domains'], $client_domains);
