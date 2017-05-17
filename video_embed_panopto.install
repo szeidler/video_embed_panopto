@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Installation, update and uninstall routines for Video Embed Panopto module.
+ */
+
+/**
  * Implements hook_install().
  */
 function video_embed_panopto_install() {
@@ -9,8 +14,16 @@ function video_embed_panopto_install() {
 }
 
 /**
+ * Change client domain variable name to use proper module's name prefix.
+ */
+function video_embed_panopto_update_7000() {
+  variable_set('video_embed_panopto_client_domains', variable_get('video_embed_field_panopto_client_domains'));
+  variable_del('video_embed_field_panopto_client_domains');
+}
+
+/**
  * Implements hook_uninstall().
  */
 function video_embed_panopto_uninstall() {
-  variable_del('video_embed_field_panopto_client_domains');
+  variable_del('video_embed_panopto_client_domains');
 }

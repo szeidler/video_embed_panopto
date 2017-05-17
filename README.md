@@ -26,9 +26,15 @@ implementing `hook_video_embed_handler_info_alter()`.
 <?php
 
 /**
+ * @file
+ * Handler info alternation for video_embed_panopto.
+ */
+
+/**
  * Implements hook_video_embed_handler_info_alter().
  */
 function mymodule_video_embed_handler_info_alter(&$info) {
   $info['panopto']['domains'][] = 'myprefix.cloud.panopto.eu';
 }
+
 ```

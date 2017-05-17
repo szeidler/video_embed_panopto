@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @file
+ * Add a handler for Panopto.com videos to Video Embed Field.
+ *
+ * @see video_embed_field.api.php for more documentation
+ */
+
 define('VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH', '640');
 define('VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT', '480');
 
@@ -52,9 +59,8 @@ function video_embed_panopto_video_embed_handler_info() {
  *
  * @return array
  *   The provider settings form array.
- *
  */
-function video_embed_panopto_form($defaults) {
+function video_embed_panopto_form(array $defaults) {
   $form = array();
   $form['width'] = array(
     '#type' => 'textfield',
@@ -87,7 +93,7 @@ function video_embed_panopto_form($defaults) {
  * @param array $form
  *   The form to validate structure.
  */
-function video_embed_panopto_form_validate($element, &$form_state, $form) {
+function video_embed_panopto_form_validate(array $element, array &$form_state, array $form) {
   video_embed_field_validate_dimensions($element);
 }
 
@@ -107,17 +113,17 @@ function video_embed_panopto_form_video_embed_field_settings_form_alter(&$form, 
 }
 
 /**
- * Clears the video_embed_field_handlers cache to register our new client
- * domains.
+ * Clears the video_embed_field_handlers cache
  *
+ * Necessary to register our new client domains.
  * @see video_embed_panopto_video_embed_handler_info_alter()
  *
- * @param $form
- *   Nested array of form elements that comprise the form.
- * @param $form_state
- *   A keyed array containing the current state of the form.
+ * @param array $form
+ *   Form elements that comprise the form.
+ * @param array $form_state
+ *  Current state of the form.
  */
-function _video_embed_panopto_form_video_embed_field_settings_clear_cache($form, &$form_state) {
+function _video_embed_panopto_form_video_embed_field_settings_clear_cache(array $form, array &$form_state) {
   cache_clear_all('video_embed_field_handlers', 'cache');
 }
 
@@ -128,9 +134,8 @@ function _video_embed_panopto_form_video_embed_field_settings_clear_cache($form,
  * `This video provider is not currently supported` error.
  *
  * Implements hook_video_embed_handler_info_alter().
- *
  */
-function video_embed_panopto_video_embed_handler_info_alter(&$info) {
+function video_embed_panopto_video_embed_handler_info_alter(array &$info) {
   if ($client_domains_value = variable_get('video_embed_field_panopto_client_domains', '')) {
     $client_domains = preg_split('/(\r\n?|\n)/', $client_domains_value);
     if (!empty($client_domains)) {
@@ -161,11 +166,10 @@ function video_embed_panopto_handle_video($url, array $settings) {
 
     // Theme the embedding element.
     $embed = theme('video_embed_panopto', array(
-        'url' => '\\\\' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/Pages/Viewer.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
-        'width' => $settings['width'],
-        'height' => $settings['height'],
-      )
-    );
+      'url' => '\\\\' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/Pages/Viewer.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
+      'width' => $settings['width'],
+      'height' => $settings['height'],
+    ));
 
     // Return a render array.
     $video = array(
@@ -184,7 +188,7 @@ function video_embed_panopto_handle_video($url, array $settings) {
 /**
  * Retrieves the thumbnail for the Panopto video.
  *
- * @param $url
+ * @param string $url
  *   Panopto video or embed url.
  *
  * @return array
