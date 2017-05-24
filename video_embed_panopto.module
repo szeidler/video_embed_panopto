@@ -167,7 +167,7 @@ function video_embed_panopto_handle_video($url, array $settings) {
 
     // Theme the embedding element.
     $embed = theme('video_embed_panopto', array(
-      'url' => '\\\\' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/Pages/Embed.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
+      'url' => '//' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/Pages/Embed.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
       'width' => $settings['width'],
       'height' => $settings['height'],
     ));
