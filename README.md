@@ -3,7 +3,7 @@ REQUIREMENTS
 
 This module requires the following modules:
 
- * Video Embed Field (https://drupal.org/project/video_embed_field)
+ * Video Embed Field (https://drupal.org/project/video_embed_field) 7.x-2.0-beta11 or higher.
 
 INSTALLATION
 ------------

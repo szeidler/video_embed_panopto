@@ -167,16 +167,15 @@ function video_embed_panopto_handle_video($url, array $settings) {
 
     // Theme the embedding element.
     $embed = theme('video_embed_panopto', array(
-      'url' => '//' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/Pages/Embed.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
+      'url' => '//' . $video_details['client_server'] . '/Panopto/Pages/Embed.aspx?id=' . $video_details['video_id'] . '&v=' . $video_details['version'] . '&autoplay=' . $video_details['autoplay'],
       'width' => $settings['width'],
       'height' => $settings['height'],
     ));
 
     // Return a render array.
-    $video = array(
+    $output = array(
       '#markup' => $embed,
     );
-    $output = $video;
   }
   else {
     drupal_set_message(t('Error with getting id of the video.'), 'error');
@@ -199,7 +198,7 @@ function video_embed_panopto_handle_video($url, array $settings) {
  */
 function video_embed_panopto_handle_thumbnail($url) {
   $video_details = _video_embed_panopto_get_video_details($url);
-  $thumbnail = 'https://' . $video_details['client_id'] . '.' . $video_details['server'] . '/Panopto/PublicAPI/SessionPreviewImage?id=' . $video_details['video_id'];
+  $thumbnail = 'https://' . $video_details['client_server'] . '/Panopto/PublicAPI/SessionPreviewImage?id=' . $video_details['video_id'];
   return array(
     'id' => $video_details['video_id'],
     'url' => $thumbnail,
@@ -218,16 +217,15 @@ function video_embed_panopto_handle_thumbnail($url) {
 function _video_embed_panopto_get_video_details($url) {
   $matches = array();
   $patterns = array(
-    '@.*//(.*).(hosted.panopto.com|cloud.panopto.eu)/Panopto/Pages/Viewer\.aspx\?id\=([^"\&]+)@i',
-    '@.*//(.*).(hosted.panopto.com|cloud.panopto.eu)/Panopto/Pages/Embed\.aspx\?id\=([^"\&]+)@i',
+    '@.*//(.*)/Panopto/Pages/Viewer\.aspx\?id\=([^"\&]+)@i',
+    '@.*//(.*)/Panopto/Pages/Embed\.aspx\?id\=([^"\&]+)@i',
   );
   foreach ($patterns as $pattern) {
     preg_match($pattern, $url, $matches);
-    if (!empty($matches[1]) && !empty($matches[2]) && !empty($matches[3])) {
+    if (!empty($matches[1]) && !empty($matches[2])) {
       return array(
-        'client_id' => $matches[1],
-        'server' => $matches[2],
-        'video_id' => $matches[3],
+        'client_server' => $matches[1],
+        'video_id' => $matches[2],
       );
     }
   }
