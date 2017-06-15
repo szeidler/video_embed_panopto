@@ -163,7 +163,7 @@ function video_embed_panopto_handle_video($url, array $settings) {
   if ($video_details) {
     // The module currently supports version 1 only.
     $video_details['version'] = 1;
-    $video_details['autoplay'] = $settings['autoplay'] ? 'true' : 'false';
+    $video_details['autoplay'] = empty($settings['autoplay']) ? 'false' : $settings['autoplay'];
 
     // Theme the embedding element.
     $embed = theme('video_embed_panopto', array(
