@@ -9,6 +9,7 @@
 
 define('VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH', '640');
 define('VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT', '480');
+define('VIDEO_EMBED_PANOPTO_DEFAULT_AUTOPLAY', 'false');
 
 /**
  * Implements hook_theme().
@@ -46,6 +47,7 @@ function video_embed_panopto_video_embed_handler_info() {
     'defaults' => array(
       'width' => VIDEO_EMBED_PANOPTO_DEFAULT_WIDTH,
       'height' => VIDEO_EMBED_PANOPTO_DEFAULT_HEIGHT,
+      'autoplay' => VIDEO_EMBED_PANOPTO_DEFAULT_AUTOPLAY,
     ),
   );
   return $handlers;
@@ -163,7 +165,7 @@ function video_embed_panopto_handle_video($url, array $settings) {
   if ($video_details) {
     // The module currently supports version 1 only.
     $video_details['version'] = 1;
-    $video_details['autoplay'] = empty($settings['autoplay']) ? 'false' : $settings['autoplay'];
+    $video_details['autoplay'] = $settings['autoplay'] ? 'true' : 'false';
 
     // Theme the embedding element.
     $embed = theme('video_embed_panopto', array(
